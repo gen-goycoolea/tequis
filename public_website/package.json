@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Sitio Web Público de TequisDelivery",
   "scripts": {
-    "build": "echo 'Static site build complete'"
+    "build": "echo ready"
   }
 }

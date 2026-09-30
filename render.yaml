@@ -15,5 +15,5 @@ services:
     name: tequis-web
     env: static
     rootDir: public_website
-    buildCommand: npm run build
+    buildCommand: echo ready
     staticPublishPath: .
