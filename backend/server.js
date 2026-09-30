@@ -22,17 +22,61 @@ function generatePin() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+const twilio = require('twilio');
+
+// Inicializar cliente Twilio solo si existen credenciales válidas en .env
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+
+let twilioClient = null;
+if (twilioAccountSid && twilioAuthToken && twilioAccountSid.startsWith('AC')) {
+  try {
+    twilioClient = twilio(twilioAccountSid, twilioAuthToken);
+    console.log('📱 Cliente de Twilio SMS configurado y listo para producción.');
+  } catch (err) {
+    console.error('⚠️ Error inicializando Twilio:', err.message);
+  }
+} else {
+  console.log('ℹ️ Twilio no configurado -> Operando en Modo Híbrido (SMS de prueba + soporte Twilio preparado)');
+}
+
 // Inicializar la Base de Datos SQLite
 initDb().catch(err => console.error('Error inicializando SQLite:', err));
 
 // --- 1. AUTENTICACIÓN Y REGISTRO COMPRADOR ---
-app.post('/api/auth/send-otp', (req, res) => {
+app.post('/api/auth/send-otp', async (req, res) => {
   const { phone } = req.body;
   if (!phone || phone.length < 10) return res.status(400).json({ error: 'Ingresa un celular de 10 dígitos' });
+
   const otpCode = generatePin();
   otpStore[phone] = otpCode;
   console.log(`📱 OTP para ${phone}: ${otpCode}`);
-  res.json({ message: 'Código SMS enviado', phone, demoOtp: otpCode });
+
+  let smsSentReal = false;
+
+  // Si Twilio está activo, enviar SMS real a celular mexicano (+52)
+  if (twilioClient && twilioPhoneNumber) {
+    try {
+      const formattedPhone = phone.startsWith('+') ? phone : `+52${phone.replace(/\D/g, '')}`;
+      await twilioClient.messages.create({
+        body: `TequisDelivery: Tu código de verificación es ${otpCode}. No lo compartas con nadie.`,
+        from: twilioPhoneNumber,
+        to: formattedPhone
+      });
+      smsSentReal = true;
+      console.log(`✅ SMS de Twilio enviado exitosamente a ${formattedPhone}`);
+    } catch (err) {
+      console.error(`❌ Error enviando SMS real con Twilio a ${phone}:`, err.message);
+    }
+  }
+
+  res.json({
+    message: smsSentReal ? 'Código SMS enviado a tu teléfono' : 'Código de prueba generado',
+    phone,
+    smsSentReal,
+    demoOtp: otpCode
+  });
 });
 
 app.post('/api/auth/register-customer', async (req, res) => {

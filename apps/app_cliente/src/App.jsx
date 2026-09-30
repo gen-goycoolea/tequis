@@ -82,7 +82,9 @@ export default function App() {
         return;
       }
       setDemoOtp(data.demoOtp);
-      setOtpInput(data.demoOtp);
+      // Si el SMS fue enviado vía Twilio real, dejamos el campo listo para escribir.
+      // Si es modo prueba/demo, autocompletamos con demoOtp.
+      setOtpInput(data.smsSentReal ? '' : data.demoOtp);
       setAuthStep('OTP_VERIFY');
     } catch (err) {
       setAuthError('Error conectando con el servidor');
