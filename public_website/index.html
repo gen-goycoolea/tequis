@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TequisDelivery 🚴‍♂️ - Plataforma Local de Entregas en Tequisquiapan</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased flex flex-col min-h-screen">
+
+  {/* Header */}
+  <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <div class="bg-rose-600 text-white px-3 py-1.5 rounded-xl font-black text-xl shadow-md">
+          Tequis 🚴‍♂️
+        </div>
+        <span class="font-black text-xl tracking-tight text-gray-900">TequisDelivery</span>
+      </div>
+      <div class="flex items-center gap-4 text-sm font-bold">
+        <a href="privacidad.html" class="text-gray-600 hover:text-rose-600">Aviso de Privacidad</a>
+        <a href="terminos.html" class="text-gray-600 hover:text-rose-600">Términos & Condiciones</a>
+      </div>
+    </div>
+  </header>
+
+  {/* Main */}
+  <main class="max-w-5xl mx-auto px-4 py-12 flex-1 space-y-12">
+    <div class="bg-gradient-to-r from-rose-600 to-rose-700 rounded-3xl p-8 text-white shadow-xl text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="space-y-3 max-w-xl">
+        <span class="bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Tequisquiapan, Querétaro</span>
+        <h1 class="text-4xl font-black leading-tight">La plataforma local de delivery en bicicleta</h1>
+        <p class="text-rose-100 text-base">Conectamos fondas, restaurantes, cocinas y tiendas con repartidores locales en bici normal y eléctrica de forma segura.</p>
+      </div>
+      <div class="bg-white text-gray-900 p-6 rounded-2xl shadow-lg space-y-3 text-center min-w-[240px]">
+        <p class="font-black text-lg text-rose-600">Descarga la App</p>
+        <div class="bg-gray-100 p-2.5 rounded-xl font-bold text-xs text-gray-700">Disponible en Google Play</div>
+        <div class="bg-gray-100 p-2.5 rounded-xl font-bold text-xs text-gray-700">Disponible en App Store</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-2">
+        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center font-bold text-xl mb-3">🛍️</div>
+        <h3 class="font-bold text-lg text-gray-900">Para Compradores</h3>
+        <p class="text-xs text-gray-500">Pide comida de tus fondas favoritas con confirmación segura mediante PIN de 4 dígitos.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-2">
+        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold text-xl mb-3">🚴‍♂️</div>
+        <h3 class="font-bold text-lg text-gray-900">Para Repartidores</h3>
+        <p class="text-xs text-gray-500">Cualquier persona con bici normal o eléctrica puede repartir previa verificación de INE/CURP.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-2">
+        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold text-xl mb-3">🏪</div>
+        <h3 class="font-bold text-lg text-gray-900">Para Comercios</h3>
+        <p class="text-xs text-gray-500">Fondas y tiendas de Tequisquiapan pueden gestionar sus comandas y recibir transferencias directas.</p>
+      </div>
+    </div>
+  </main>
+
+  {/* Footer Obligatorio para Tiendas de Apps */}
+  <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 space-y-2">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="font-bold text-gray-700">TequisDelivery • Tequisquiapan, Qro., México</p>
+      <div class="flex gap-4 font-semibold text-gray-600">
+        <a href="privacidad.html" class="hover:text-rose-600 underline">Aviso de Privacidad (LFPDPPP)</a>
+        <span>•</span>
+        <a href="terminos.html" class="hover:text-rose-600 underline">Términos de Servicio y Responsiva</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

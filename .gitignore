@@ -1,0 +1,25 @@
+# Node / Vite / Dependencies
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Android / Gradle build
+.gradle/
+build/
+app/build/
+.navigation/
+captures/
+*.apk
+*.aab
+local.properties
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/

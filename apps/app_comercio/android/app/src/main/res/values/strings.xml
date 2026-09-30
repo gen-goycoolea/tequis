@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TequisDelivery Negocios</string>
+    <string name="title_activity_main">TequisDelivery Negocios</string>
+    <string name="package_name">com.tequisquiapan.delivery.comercio</string>
+    <string name="custom_url_scheme">com.tequisquiapan.delivery.comercio</string>
+</resources>

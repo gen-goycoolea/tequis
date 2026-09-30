@@ -1,0 +1,8 @@
+{
+  "appId": "com.tequisquiapan.delivery",
+  "appName": "TequisDelivery",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

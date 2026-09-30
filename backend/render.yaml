@@ -1,0 +1,12 @@
+# render.yaml para despliegue automático con HTTPS gratis en Render.com
+services:
+  - type: web
+    name: tequis-delivery-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,8 @@
+{
+  "appId": "com.tequisquiapan.delivery.comercio",
+  "appName": "TequisDelivery Negocios",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
