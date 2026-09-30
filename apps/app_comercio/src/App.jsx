@@ -1,9 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Store, Check, ShoppingBag, Plus, ShieldCheck, CreditCard, FileText, Trash2, UtensilsCrossed } from 'lucide-react';
+import { Store, Check, ShoppingBag, Plus, ShieldCheck, CreditCard, FileText, Trash2, UtensilsCrossed, Bell, VolumeX } from 'lucide-react';
 import { io } from 'socket.io-client';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 const socket = io(API_BASE);
+
+// --- SISTEMA DE ALARMA SONORA CONTINUA CON WEB AUDIO API ---
+let alarmInterval = null;
+let audioCtx = null;
+
+function startAlarmLoop() {
+  if (alarmInterval) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    alarmInterval = setInterval(() => {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        // Tono sirena alternante
+        const freq = (Math.floor(Date.now() / 300) % 2 === 0) ? 900 : 650;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.28);
+      } catch (e) {
+        console.error(e);
+      }
+    }, 350);
+  } catch (err) {
+    console.error('Error iniciando alarma sonora:', err);
+  }
+}
+
+function stopAlarmLoop() {
+  if (alarmInterval) {
+    clearInterval(alarmInterval);
+    alarmInterval = null;
+  }
+}
 
 export default function App() {
   const [stores, setStores] = useState([]);
@@ -11,6 +59,7 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState(null);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [isAlarmRinging, setIsAlarmRinging] = useState(false);
 
   const [newStoreData, setNewStoreData] = useState({
     name: '',
@@ -32,7 +81,9 @@ export default function App() {
     fetchStores();
     fetchOrders();
 
-    socket.on('new_order', o => setOrders(prev => [o, ...prev]));
+    socket.on('new_order', o => {
+      setOrders(prev => [o, ...prev]);
+    });
     socket.on('order_updated', o => setOrders(prev => prev.map(item => item.id === o.id ? o : item)));
     socket.on('stores_updated', s => {
       setStores(s);
@@ -54,6 +105,21 @@ export default function App() {
       setSelectedStore(stores[0]);
     }
   }, [stores]);
+
+  // Manejar el disparo continuo de la alarma mientras haya un pedido PENDING para este negocio
+  useEffect(() => {
+    const hasPendingOrder = orders.some(
+      o => o.storeId === selectedStore?.id && o.status === 'PENDING'
+    );
+
+    if (hasPendingOrder) {
+      setIsAlarmRinging(true);
+      startAlarmLoop();
+    } else {
+      setIsAlarmRinging(false);
+      stopAlarmLoop();
+    }
+  }, [orders, selectedStore]);
 
   const fetchStores = () => fetch(`${API_BASE}/api/stores`).then(r => r.json()).then(setStores);
   const fetchOrders = () => fetch(`${API_BASE}/api/orders`).then(r => r.json()).then(setOrders);
@@ -123,10 +189,22 @@ export default function App() {
   };
 
   const handleAcceptOrder = async (orderId) => {
+    stopAlarmLoop();
+    setIsAlarmRinging(false);
     await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'ACCEPTED' })
+    });
+  };
+
+  const handleRejectOrder = async (orderId) => {
+    stopAlarmLoop();
+    setIsAlarmRinging(false);
+    await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'CANCELLED' })
     });
   };
 
@@ -166,6 +244,26 @@ export default function App() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+
+        {/* Banner de Alarma Sonora de Nuevo Pedido */}
+        {isAlarmRinging && (
+          <div className="bg-rose-600 text-white p-4 rounded-2xl shadow-xl flex items-center justify-between animate-pulse">
+            <div className="flex items-center gap-3">
+              <Bell size={24} className="animate-bounce" />
+              <div>
+                <h3 className="font-black text-sm">¡NUEVO PEDIDO PENDIENTE DE ACEPTAR!</h3>
+                <p className="text-xs text-rose-100">La alarma suena continuamente. Presiona "Aceptar" o "Rechazar" para apagarla.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { stopAlarmLoop(); setIsAlarmRinging(false); }}
+              className="bg-white text-rose-600 font-bold px-3 py-1.5 rounded-xl text-xs shadow flex items-center gap-1 hover:bg-rose-50"
+            >
+              <VolumeX size={14} /> Silenciar
+            </button>
+          </div>
+        )}
+
         {selectedStore && (
           <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 text-xs">
@@ -226,7 +324,7 @@ export default function App() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {storeOrders.map(order => (
-              <div key={order.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+              <div key={order.id} className={`bg-white p-4 rounded-2xl border shadow-sm space-y-3 ${order.status === 'PENDING' ? 'border-rose-500 ring-2 ring-rose-300' : 'border-gray-200'}`}>
                 <div className="flex justify-between items-start border-b pb-2">
                   <div>
                     <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">#{order.id}</span>
@@ -248,16 +346,24 @@ export default function App() {
 
                 <div className="flex justify-between items-center text-xs font-semibold">
                   <span className="text-gray-500">Estatus:</span>
-                  <span className="text-gray-900">{order.status}</span>
+                  <span className={`font-bold ${order.status === 'PENDING' ? 'text-rose-600' : 'text-gray-900'}`}>{order.status}</span>
                 </div>
 
                 {order.status === 'PENDING' && (
-                  <button
-                    onClick={() => handleAcceptOrder(order.id)}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"
-                  >
-                    <Check size={16} /> Aceptar y Empezar a Preparar
-                  </button>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleAcceptOrder(order.id)}
+                      className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"
+                    >
+                      <Check size={16} /> Aceptar Pedido
+                    </button>
+                    <button
+                      onClick={() => handleRejectOrder(order.id)}
+                      className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-3 py-2.5 rounded-xl text-xs"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
