@@ -505,6 +505,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log(`🔒 Backend TequisDelivery con SQLite Escuchando en http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🔒 Backend TequisDelivery con SQLite Escuchando en http://0.0.0.0:${PORT}`);
 });

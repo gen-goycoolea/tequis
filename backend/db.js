@@ -33,7 +33,7 @@ const all = (sql, params = []) => {
 };
 
 async function initDb() {
-  db.serialize(async () => {
+  try {
     // 1. Tabla Clientes
     await run(`
       CREATE TABLE IF NOT EXISTS customers (
@@ -226,7 +226,9 @@ async function initDb() {
 
       console.log('✅ Base de datos inicializada y sembrada con éxito.');
     }
-  });
+  } catch (err) {
+    console.error('Error inicializando tablas en SQLite:', err);
+  }
 }
 
 module.exports = {
