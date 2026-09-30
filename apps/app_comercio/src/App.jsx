@@ -136,8 +136,8 @@ export default function App() {
     <div className="min-h-screen bg-gray-100 text-gray-900 pb-20">
       <header className="bg-indigo-900 text-white sticky top-0 z-30 shadow-md">
         <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Store className="text-indigo-300" size={24} />
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Logo Comercio" className="w-10 h-10 rounded-xl shadow-md object-cover" />
             <div>
               <h1 className="font-black text-lg">TequisDelivery Negocios</h1>
               <p className="text-[10px] text-indigo-200">Panel Seguro para Fondas, Cocinas y Tiendas</p>

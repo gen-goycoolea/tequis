@@ -330,10 +330,8 @@ export default function App() {
       {/* Header Cliente */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-rose-600 text-white p-2 rounded-xl font-black text-lg shadow-md flex items-center gap-1">
-              <span>Tequis</span><Bike size={20} />
-            </div>
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Logo Cliente" className="w-11 h-11 rounded-xl shadow-md object-cover" />
             <div>
               <h1 className="font-black text-gray-900 text-lg">TequisDelivery Cliente</h1>
               <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
